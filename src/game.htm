@@ -1,0 +1,34 @@
+<html>
+<head>
+<title>Zombeez</title>
+<script type="text/javascript" src="scripts/jquery.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){
+  var canvas = document.getElementById("main_window");
+  var context = canvas.getContext("2d");
+  
+  var tile_image = new Image();
+  tile_image.src = "media/gas_station.png";
+  tile_image.onload = function(){
+    context.drawImage(tile_image, 0,0);
+  };
+
+  var soldier_image = new Image();
+  soldier_image.src = "media/soldier.png";
+  soldier_image.onload = function(){
+    context.drawImage(soldier_image, 700,700);
+  };
+
+  var card_image = new Image();
+  card_image.src = "media/card.png";
+  card_image.onload = function(){
+    context.drawImage(card_image, 0,700);
+  };
+
+});
+</script>
+</head>
+<body style="background-color:black;">
+<canvas id="main_window" width="1000" height="1000"  />
+</body>
+</html>
