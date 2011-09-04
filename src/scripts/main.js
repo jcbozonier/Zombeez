@@ -50,6 +50,18 @@
     game_piece.prototype.draw_tile = function(context) {
       return context.drawImage(this.image, this.x, this.y, this.width, this.height);
     };
+    game_piece.prototype.pan_up = function() {
+      return this.y += 20;
+    };
+    game_piece.prototype.pan_down = function() {
+      return this.y -= 20;
+    };
+    game_piece.prototype.pan_left = function() {
+      return this.x += 20;
+    };
+    game_piece.prototype.pan_right = function() {
+      return this.x -= 20;
+    };
     game_piece.prototype.zoom_out = function() {
       this.dezoom_size_and_position();
       this.zoom_factor -= .1;
@@ -181,24 +193,48 @@
     });
     animate((function() {
       return the_screen.refresh(game_pieces);
-    }), 33);
+    }), 50);
     $("#main_window").mousemove(function() {
       return the_screen.mouse_moved(event);
     }).click(function() {
       return the_screen.mouse_clicked(event);
     });
     document.onkeydown = function(event) {
-      var game_piece, _i, _j, _len, _len2;
+      var game_piece, _i, _j, _k, _l, _len, _len2, _len3, _len4, _len5, _len6, _m, _n;
       switch (event.keyCode) {
-        case 189:
+        case 37:
           for (_i = 0, _len = game_pieces.length; _i < _len; _i++) {
             game_piece = game_pieces[_i];
+            game_piece.pan_left();
+          }
+          break;
+        case 38:
+          for (_j = 0, _len2 = game_pieces.length; _j < _len2; _j++) {
+            game_piece = game_pieces[_j];
+            game_piece.pan_up();
+          }
+          break;
+        case 39:
+          for (_k = 0, _len3 = game_pieces.length; _k < _len3; _k++) {
+            game_piece = game_pieces[_k];
+            game_piece.pan_right();
+          }
+          break;
+        case 40:
+          for (_l = 0, _len4 = game_pieces.length; _l < _len4; _l++) {
+            game_piece = game_pieces[_l];
+            game_piece.pan_down();
+          }
+          break;
+        case 189:
+          for (_m = 0, _len5 = game_pieces.length; _m < _len5; _m++) {
+            game_piece = game_pieces[_m];
             game_piece.zoom_out();
           }
           break;
         case 187:
-          for (_j = 0, _len2 = game_pieces.length; _j < _len2; _j++) {
-            game_piece = game_pieces[_j];
+          for (_n = 0, _len6 = game_pieces.length; _n < _len6; _n++) {
+            game_piece = game_pieces[_n];
             game_piece.zoom_in();
           }
       }
