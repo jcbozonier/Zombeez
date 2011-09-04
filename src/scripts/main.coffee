@@ -6,14 +6,17 @@ class game_piece
   constructor: (image_url)->
     @x = 0
     @y = 0
+    @original_x = 0
+    @original_y = 0
     @set_src(image_url)
+    @zoom_factor = 1
   set_name: (@name)->
   set_src: (url_to_image_file)->
     self = @
     @image = new Image()
     @image.onload = ->
-      self.width = self.image.width
-      self.height = self.image.height
+      self.width = self.original_width = self.image.width = self.image.width * .5
+      self.height = self.original_height =self.image.height = self.image.height * .5
     @image.src = url_to_image_file
   last_clicked_x_offset: 0
   last_clicked_y_offset: 0
@@ -26,8 +29,28 @@ class game_piece
   is_at: (x,y)->
     @x < x and x < (@x + @width) and
     @y < y and y < (@y + @height)
+  zoom: (value)-> value * @zoom_factor
+  dezoom: (value)-> value / @zoom_factor
   draw_tile: (context)->
-    context.drawImage @image, @x, @y
+    context.drawImage @image, @x, @y, @width, @height
+  zoom_out: ->
+    @dezoom_size_and_position()
+    @zoom_factor -= .1
+    @zoom_size_and_position()
+  zoom_in: ->
+    @dezoom_size_and_position()
+    @zoom_factor += .1
+    @zoom_size_and_position()
+  dezoom_size_and_position: ->
+    @x = @dezoom(@x)
+    @y = @dezoom(@y)
+    @width = @dezoom(@width)
+    @height = @dezoom(@height)
+  zoom_size_and_position: ->
+    @x = @zoom(@x)
+    @y = @zoom(@y)
+    @width = @zoom(@width)
+    @height = @zoom(@height)
 
 class screen
   constructor: (canvas_element_id)->
@@ -100,6 +123,10 @@ $(document).ready(()->
   $("#main_window")
     .mousemove(->the_screen.mouse_moved(event))
     .click(->the_screen.mouse_clicked(event))
-
+  document.onkeydown = (event)->
+    switch event.keyCode
+      when 189 then game_piece.zoom_out() for game_piece in game_pieces
+      when 187 then game_piece.zoom_in() for game_piece in game_pieces
+    the_screen.refresh(game_pieces)
   this
 )

@@ -10,7 +10,10 @@
     function game_piece(image_url) {
       this.x = 0;
       this.y = 0;
+      this.original_x = 0;
+      this.original_y = 0;
       this.set_src(image_url);
+      this.zoom_factor = 1;
     }
     game_piece.prototype.set_name = function(name) {
       this.name = name;
@@ -20,8 +23,8 @@
       self = this;
       this.image = new Image();
       this.image.onload = function() {
-        self.width = self.image.width;
-        return self.height = self.image.height;
+        self.width = self.original_width = self.image.width = self.image.width * .5;
+        return self.height = self.original_height = self.image.height = self.image.height * .5;
       };
       return this.image.src = url_to_image_file;
     };
@@ -38,8 +41,36 @@
     game_piece.prototype.is_at = function(x, y) {
       return this.x < x && x < (this.x + this.width) && this.y < y && y < (this.y + this.height);
     };
+    game_piece.prototype.zoom = function(value) {
+      return value * this.zoom_factor;
+    };
+    game_piece.prototype.dezoom = function(value) {
+      return value / this.zoom_factor;
+    };
     game_piece.prototype.draw_tile = function(context) {
-      return context.drawImage(this.image, this.x, this.y);
+      return context.drawImage(this.image, this.x, this.y, this.width, this.height);
+    };
+    game_piece.prototype.zoom_out = function() {
+      this.dezoom_size_and_position();
+      this.zoom_factor -= .1;
+      return this.zoom_size_and_position();
+    };
+    game_piece.prototype.zoom_in = function() {
+      this.dezoom_size_and_position();
+      this.zoom_factor += .1;
+      return this.zoom_size_and_position();
+    };
+    game_piece.prototype.dezoom_size_and_position = function() {
+      this.x = this.dezoom(this.x);
+      this.y = this.dezoom(this.y);
+      this.width = this.dezoom(this.width);
+      return this.height = this.dezoom(this.height);
+    };
+    game_piece.prototype.zoom_size_and_position = function() {
+      this.x = this.zoom(this.x);
+      this.y = this.zoom(this.y);
+      this.width = this.zoom(this.width);
+      return this.height = this.zoom(this.height);
     };
     return game_piece;
   })();
@@ -156,6 +187,23 @@
     }).click(function() {
       return the_screen.mouse_clicked(event);
     });
+    document.onkeydown = function(event) {
+      var game_piece, _i, _j, _len, _len2;
+      switch (event.keyCode) {
+        case 189:
+          for (_i = 0, _len = game_pieces.length; _i < _len; _i++) {
+            game_piece = game_pieces[_i];
+            game_piece.zoom_out();
+          }
+          break;
+        case 187:
+          for (_j = 0, _len2 = game_pieces.length; _j < _len2; _j++) {
+            game_piece = game_pieces[_j];
+            game_piece.zoom_in();
+          }
+      }
+      return the_screen.refresh(game_pieces);
+    };
     return this;
   });
 }).call(this);
